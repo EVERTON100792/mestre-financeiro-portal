@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, TrendingUp, AlertCircle } from 'lucide-react';
+import { Calculator, TrendingUp, AlertCircle, Printer } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -68,6 +67,10 @@ const CalculadoraJurosCompostos = () => {
     setDadosGrafico(dadosChart as any);
   };
 
+  const imprimirPDF = () => {
+    window.print();
+  };
+
   // Calcular automaticamente quando os valores mudarem
   useEffect(() => {
     calcularJurosCompostos();
@@ -115,7 +118,7 @@ const CalculadoraJurosCompostos = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Formulário */}
-          <Card>
+          <Card className="no-print">
             <CardHeader>
               <CardTitle>Dados do Investimento</CardTitle>
               <CardDescription>
@@ -185,42 +188,54 @@ const CalculadoraJurosCompostos = () => {
           {resultado && (
             <div className="lg:col-span-2 space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-finance-green">Resultado da Simulação</CardTitle>
-                  <CardDescription>
-                    Valores após {Math.round(resultado.meses / 12)} anos e {resultado.meses % 12} meses
-                  </CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-finance-green">Resultado da Simulação</CardTitle>
+                    <CardDescription>
+                      Valores após {Math.round(resultado.meses / 12)} anos e {resultado.meses % 12} meses
+                    </CardDescription>
+                  </div>
+                  <Button 
+                    onClick={imprimirPDF} 
+                    variant="outline"
+                    className="no-print"
+                  >
+                    <Printer className="mr-2 h-4 w-4" />
+                    Imprimir PDF
+                  </Button>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">Total Investido</div>
-                        <div className="text-2xl font-bold text-finance-blue">
-                          {formatarMoeda(resultado.totalInvestido)}
+                  <div className="print-section">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">Total Investido</div>
+                          <div className="text-2xl font-bold text-finance-blue">
+                            {formatarMoeda(resultado.totalInvestido)}
+                          </div>
+                        </div>
+                        
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">Rendimento</div>
+                          <div className="text-2xl font-bold text-finance-green">
+                            {formatarMoeda(resultado.rendimento)}
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">Rendimento</div>
-                        <div className="text-2xl font-bold text-finance-green">
-                          {formatarMoeda(resultado.rendimento)}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="space-y-4">
-                      <div className="bg-finance-green/10 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">Valor Final</div>
-                        <div className="text-3xl font-bold text-finance-green">
-                          {formatarMoeda(resultado.valorFinal)}
+                      <div className="space-y-4">
+                        <div className="bg-finance-green/10 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">Valor Final</div>
+                          <div className="text-3xl font-bold text-finance-green">
+                            {formatarMoeda(resultado.valorFinal)}
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="bg-purple-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">Ganho Total</div>
-                        <div className="text-2xl font-bold text-purple-600">
-                          {formatarPorcentagem(resultado.percentualGanho)}
+                        
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">Ganho Total</div>
+                          <div className="text-2xl font-bold text-purple-600">
+                            {formatarPorcentagem(resultado.percentualGanho)}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -229,7 +244,7 @@ const CalculadoraJurosCompostos = () => {
               </Card>
 
               {/* Gráfico */}
-              <Card>
+              <Card className="no-print">
                 <CardHeader>
                   <CardTitle>Evolução do Investimento</CardTitle>
                   <CardDescription>
@@ -277,7 +292,7 @@ const CalculadoraJurosCompostos = () => {
               </Card>
 
               {/* CTA para planilha */}
-              <Alert>
+              <Alert className="no-print">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                   <strong>Quer organizar seus investimentos?</strong> Use nossa 
@@ -292,7 +307,7 @@ const CalculadoraJurosCompostos = () => {
         </div>
 
         {/* Informações educativas */}
-        <div className="mt-12">
+        <div className="mt-12 no-print">
           <Card>
             <CardHeader>
               <CardTitle>Entenda os Juros Compostos</CardTitle>
@@ -340,6 +355,14 @@ const CalculadoraJurosCompostos = () => {
       </div>
 
       <Footer />
+      
+      <style jsx>{`
+        @media print {
+          .no-print { display: none !important; }
+          .print-section { break-inside: avoid; }
+          body { font-size: 12pt; }
+        }
+      `}</style>
     </div>
   );
 };

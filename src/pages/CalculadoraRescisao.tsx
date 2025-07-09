@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -8,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, FileSpreadsheet, AlertCircle } from 'lucide-react';
+import { Calculator, FileSpreadsheet, AlertCircle, Printer } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const CalculadoraRescisao = () => {
@@ -70,6 +69,10 @@ const CalculadoraRescisao = () => {
     }).format(valor);
   };
 
+  const imprimirPDF = () => {
+    window.print();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -97,7 +100,7 @@ const CalculadoraRescisao = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Formulário */}
-          <Card>
+          <Card className="no-print">
             <CardHeader>
               <CardTitle>Dados da Rescisão</CardTitle>
               <CardDescription>
@@ -172,65 +175,77 @@ const CalculadoraRescisao = () => {
           {/* Resultado */}
           {resultado && (
             <Card>
-              <CardHeader>
-                <CardTitle className="text-finance-green">Resultado da Rescisão</CardTitle>
-                <CardDescription>Valores que você tem direito a receber</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-finance-green">Resultado da Rescisão</CardTitle>
+                  <CardDescription>Valores que você tem direito a receber</CardDescription>
+                </div>
+                <Button 
+                  onClick={imprimirPDF} 
+                  variant="outline"
+                  className="no-print"
+                >
+                  <Printer className="mr-2 h-4 w-4" />
+                  Imprimir PDF
+                </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  {resultado.avisoPrevio > 0 && (
+                <div className="print-section">
+                  <div className="space-y-3">
+                    {resultado.avisoPrevio > 0 && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span>Aviso Prévio:</span>
+                        <span className="font-medium">{formatarMoeda(resultado.avisoPrevio)}</span>
+                      </div>
+                    )}
+                    
                     <div className="flex justify-between py-2 border-b">
-                      <span>Aviso Prévio:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.avisoPrevio)}</span>
+                      <span>13º Salário Proporcional:</span>
+                      <span className="font-medium">{formatarMoeda(resultado.decimoTerceiro)}</span>
                     </div>
-                  )}
-                  
-                  <div className="flex justify-between py-2 border-b">
-                    <span>13º Salário Proporcional:</span>
-                    <span className="font-medium">{formatarMoeda(resultado.decimoTerceiro)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between py-2 border-b">
-                    <span>Férias Proporcionais + 1/3:</span>
-                    <span className="font-medium">{formatarMoeda(resultado.feriasProporcionais)}</span>
-                  </div>
-                  
-                  {resultado.feriasVencidasValor > 0 && (
+                    
                     <div className="flex justify-between py-2 border-b">
-                      <span>Férias Vencidas + 1/3:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.feriasVencidasValor)}</span>
+                      <span>Férias Proporcionais + 1/3:</span>
+                      <span className="font-medium">{formatarMoeda(resultado.feriasProporcionais)}</span>
                     </div>
-                  )}
-                  
-                  <div className="flex justify-between py-2 border-b">
-                    <span>Saldo FGTS:</span>
-                    <span className="font-medium">{formatarMoeda(resultado.fgtsDepositos)}</span>
-                  </div>
-                  
-                  {resultado.multaFgts > 0 && (
+                    
+                    {resultado.feriasVencidasValor > 0 && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span>Férias Vencidas + 1/3:</span>
+                        <span className="font-medium">{formatarMoeda(resultado.feriasVencidasValor)}</span>
+                      </div>
+                    )}
+                    
                     <div className="flex justify-between py-2 border-b">
-                      <span>Multa FGTS (40%):</span>
-                      <span className="font-medium">{formatarMoeda(resultado.multaFgts)}</span>
+                      <span>Saldo FGTS:</span>
+                      <span className="font-medium">{formatarMoeda(resultado.fgtsDepositos)}</span>
                     </div>
-                  )}
-                  
-                  <div className="flex justify-between py-2 border-b">
-                    <span>Seguro Desemprego:</span>
-                    <span className="font-medium">{resultado.seguroDesemprego}</span>
+                    
+                    {resultado.multaFgts > 0 && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span>Multa FGTS (40%):</span>
+                        <span className="font-medium">{formatarMoeda(resultado.multaFgts)}</span>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between py-2 border-b">
+                      <span>Seguro Desemprego:</span>
+                      <span className="font-medium">{resultado.seguroDesemprego}</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="bg-finance-green/10 p-4 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold">Total a Receber:</span>
-                    <span className="text-2xl font-bold text-finance-green">
-                      {formatarMoeda(resultado.total)}
-                    </span>
+                  <div className="bg-finance-green/10 p-4 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">Total a Receber:</span>
+                      <span className="text-2xl font-bold text-finance-green">
+                        {formatarMoeda(resultado.total)}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* CTA para planilha */}
-                <Alert>
+                <Alert className="no-print">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     <strong>Gostou do cálculo?</strong> Organize essa rescisão e planeje seu futuro financeiro com nossa 
@@ -245,7 +260,7 @@ const CalculadoraRescisao = () => {
         </div>
 
         {/* Informações adicionais */}
-        <div className="mt-12">
+        <div className="mt-12 no-print">
           <Card>
             <CardHeader>
               <CardTitle>Informações Importantes</CardTitle>
@@ -275,6 +290,14 @@ const CalculadoraRescisao = () => {
       </div>
 
       <Footer />
+      
+      <style jsx>{`
+        @media print {
+          .no-print { display: none !important; }
+          .print-section { break-inside: avoid; }
+          body { font-size: 12pt; }
+        }
+      `}</style>
     </div>
   );
 };
