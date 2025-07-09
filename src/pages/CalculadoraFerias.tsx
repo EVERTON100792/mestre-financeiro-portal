@@ -294,7 +294,7 @@ const CalculadoraFerias = () => {
 
       <Footer />
       
-      <style jsx>{`
+      <style>{`
         @media print {
           .no-print { display: none !important; }
           .print-section { break-inside: avoid; }

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -291,7 +292,7 @@ const CalculadoraRescisao = () => {
 
       <Footer />
       
-      <style jsx>{`
+      <style>{`
         @media print {
           .no-print { display: none !important; }
           .print-section { break-inside: avoid; }
