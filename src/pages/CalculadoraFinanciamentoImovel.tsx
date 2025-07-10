@@ -1,7 +1,8 @@
-
 import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import PrintLayout from '@/components/PrintLayout';
+import PrintTable from '@/components/PrintTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,8 +85,34 @@ const CalculadoraFinanciamentoImovel = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+
+      {resultado && (
+        <PrintLayout title={`Simulação Financiamento Imobiliário - Sistema ${resultado.sistema}`}>
+          <PrintTable
+            rows={[
+              { label: "Valor do Imóvel", value: resultado.valorImovel },
+              { label: "Entrada", value: resultado.entrada, category: "Condições do Financiamento" },
+              { label: "Valor Financiado", value: resultado.valorFinanciado },
+              { label: "Sistema", value: resultado.sistema },
+              { label: "Prazo", value: `${Math.floor(resultado.prazoMeses/12)} anos (${resultado.prazoMeses} meses)` },
+              ...(resultado.sistema === 'PRICE' 
+                ? [{ label: "PARCELA FIXA", value: resultado.parcela, highlight: true, category: "Resultado da Simulação" }]
+                : [
+                    { label: "PRIMEIRA PARCELA", value: resultado.primeiraParcela, highlight: true, category: "Resultado da Simulação" },
+                    { label: "ÚLTIMA PARCELA", value: resultado.ultimaParcela, highlight: true }
+                  ]
+              ),
+              { label: "Total de Juros", value: resultado.jurosTotal },
+              { label: "Total a Pagar", value: resultado.totalPago }
+            ]}
+          />
+          <div className="print-summary">
+            <p><strong>Resumo:</strong> Financiamento imobiliário de {formatarMoeda(resultado.valorImovel)} pelo sistema {resultado.sistema}, com total de juros de {formatarMoeda(resultado.jurosTotal)} ao longo de {Math.floor(resultado.prazoMeses/12)} anos.</p>
+          </div>
+        </PrintLayout>
+      )}
       
-      <div className="bg-white py-12">
+      <div className="bg-white py-12 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3 mb-4">
             <div className="bg-blue-50 p-3 rounded-lg">
@@ -104,9 +131,9 @@ const CalculadoraFinanciamentoImovel = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 no-print">
         <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="no-print">
+          <Card>
             <CardHeader>
               <CardTitle>Dados do Financiamento</CardTitle>
               <CardDescription>Preencha os dados para simular seu financiamento</CardDescription>
@@ -193,62 +220,60 @@ const CalculadoraFinanciamentoImovel = () => {
                   <CardTitle className="text-finance-green">Simulação - Sistema {resultado.sistema}</CardTitle>
                   <CardDescription>Resultado do seu financiamento</CardDescription>
                 </div>
-                <Button onClick={imprimirPDF} variant="outline" className="no-print">
+                <Button onClick={imprimirPDF} variant="outline">
                   <Printer className="mr-2 h-4 w-4" />
                   Imprimir PDF
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="print-section">
-                  <div className="space-y-3">
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Valor do Imóvel:</span>
+                    <span className="font-medium">{formatarMoeda(resultado.valorImovel)}</span>
+                  </div>
+                  
+                  {resultado.entrada > 0 && (
                     <div className="flex justify-between py-2 border-b">
-                      <span>Valor do Imóvel:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.valorImovel)}</span>
+                      <span>Entrada:</span>
+                      <span className="font-medium">{formatarMoeda(resultado.entrada)}</span>
                     </div>
-                    
-                    {resultado.entrada > 0 && (
-                      <div className="flex justify-between py-2 border-b">
-                        <span>Entrada:</span>
-                        <span className="font-medium">{formatarMoeda(resultado.entrada)}</span>
-                      </div>
-                    )}
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Valor Financiado:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.valorFinanciado)}</span>
-                    </div>
+                  )}
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Valor Financiado:</span>
+                    <span className="font-medium">{formatarMoeda(resultado.valorFinanciado)}</span>
+                  </div>
 
-                    {resultado.sistema === 'PRICE' ? (
+                  {resultado.sistema === 'PRICE' ? (
+                    <div className="flex justify-between py-2 border-b">
+                      <span>Parcela Fixa:</span>
+                      <span className="font-medium text-finance-blue">{formatarMoeda(resultado.parcela)}</span>
+                    </div>
+                  ) : (
+                    <>
                       <div className="flex justify-between py-2 border-b">
-                        <span>Parcela Fixa:</span>
-                        <span className="font-medium text-finance-blue">{formatarMoeda(resultado.parcela)}</span>
+                        <span>Primeira Parcela:</span>
+                        <span className="font-medium text-finance-blue">{formatarMoeda(resultado.primeiraParcela)}</span>
                       </div>
-                    ) : (
-                      <>
-                        <div className="flex justify-between py-2 border-b">
-                          <span>Primeira Parcela:</span>
-                          <span className="font-medium text-finance-blue">{formatarMoeda(resultado.primeiraParcela)}</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b">
-                          <span>Última Parcela:</span>
-                          <span className="font-medium text-finance-blue">{formatarMoeda(resultado.ultimaParcela)}</span>
-                        </div>
-                      </>
-                    )}
+                      <div className="flex justify-between py-2 border-b">
+                        <span>Última Parcela:</span>
+                        <span className="font-medium text-finance-blue">{formatarMoeda(resultado.ultimaParcela)}</span>
+                      </div>
+                    </>
+                  )}
 
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Total de Juros:</span>
-                      <span className="font-medium text-red-600">{formatarMoeda(resultado.jurosTotal)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Total a Pagar:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.totalPago)}</span>
-                    </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Total de Juros:</span>
+                    <span className="font-medium text-red-600">{formatarMoeda(resultado.jurosTotal)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Total a Pagar:</span>
+                    <span className="font-medium">{formatarMoeda(resultado.totalPago)}</span>
                   </div>
                 </div>
 
-                <Alert className="no-print">
+                <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     <strong>Organize suas finanças!</strong> Use nossa 
@@ -264,14 +289,6 @@ const CalculadoraFinanciamentoImovel = () => {
       </div>
 
       <Footer />
-      
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          .print-section { break-inside: avoid; }
-          body { font-size: 12pt; }
-        }
-      `}</style>
     </div>
   );
 };

@@ -1,7 +1,8 @@
-
 import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import PrintLayout from '@/components/PrintLayout';
+import PrintTable from '@/components/PrintTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,8 +75,30 @@ const CalculadoraAposentadoria = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+
+      {/* Conteúdo para impressão */}
+      {resultado && (
+        <PrintLayout title="Simulação de Aposentadoria INSS">
+          <PrintTable
+            rows={[
+              { label: "Sexo", value: resultado.sexo === 'masculino' ? 'Masculino' : 'Feminino' },
+              { label: "Idade Atual", value: `${resultado.idadeAtual} anos`, category: "Situação Atual" },
+              { label: "Salário Atual", value: resultado.salario },
+              { label: "Tempo de Contribuição", value: `${resultado.tempoContrib} anos` },
+              { label: "Idade Mínima", value: `${resultado.idadeMinima} anos`, category: "Requisitos" },
+              { label: "Tempo Mínimo", value: `${resultado.tempoMinimoContribuicao} anos` },
+              { label: "Tempo Restante", value: resultado.anosRestantes > 0 ? `${resultado.anosRestantes} anos` : "Pode se aposentar!" },
+              { label: "BENEFÍCIO ESTIMADO", value: resultado.beneficioEstimado, highlight: true, category: "Resultado" },
+              { label: "Percentual do Salário", value: `${resultado.percentualBeneficio}%` }
+            ]}
+          />
+          <div className="print-summary">
+            <p><strong>Atenção:</strong> Esta é uma estimativa baseada nas regras atuais do INSS. Para cálculos precisos, consulte diretamente o INSS ou um contador especializado.</p>
+          </div>
+        </PrintLayout>
+      )}
       
-      <div className="bg-white py-12">
+      <div className="bg-white py-12 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3 mb-4">
             <div className="bg-purple-50 p-3 rounded-lg">
@@ -94,9 +117,9 @@ const CalculadoraAposentadoria = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 no-print">
         <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="no-print">
+          <Card>
             <CardHeader>
               <CardTitle>Seus Dados</CardTitle>
               <CardDescription>Preencha os dados para calcular sua aposentadoria</CardDescription>
@@ -166,61 +189,59 @@ const CalculadoraAposentadoria = () => {
                   <CardTitle className="text-finance-green">Sua Simulação de Aposentadoria</CardTitle>
                   <CardDescription>Estimativa baseada nas regras atuais</CardDescription>
                 </div>
-                <Button onClick={imprimirPDF} variant="outline" className="no-print">
+                <Button onClick={imprimirPDF} variant="outline">
                   <Printer className="mr-2 h-4 w-4" />
                   Imprimir PDF
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="print-section">
-                  <div className="space-y-3">
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Idade Atual:</span>
-                      <span className="font-medium">{resultado.idadeAtual} anos</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Tempo de Contribuição:</span>
-                      <span className="font-medium">{resultado.tempoContrib} anos</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Idade Mínima ({resultado.sexo}):</span>
-                      <span className="font-medium">{resultado.idadeMinima} anos</span>
-                    </div>
-
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Tempo Mínimo de Contribuição:</span>
-                      <span className="font-medium">{resultado.tempoMinimoContribuicao} anos</span>
-                    </div>
-
-                    {resultado.anosRestantes > 0 ? (
-                      <div className="flex justify-between py-2 border-b">
-                        <span>Tempo Restante:</span>
-                        <span className="font-medium text-orange-600">{resultado.anosRestantes} anos</span>
-                      </div>
-                    ) : (
-                      <div className="flex justify-between py-2 border-b">
-                        <span>Status:</span>
-                        <span className="font-medium text-finance-green">Pode se aposentar!</span>
-                      </div>
-                    )}
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Idade Atual:</span>
+                    <span className="font-medium">{resultado.idadeAtual} anos</span>
+                  </div>
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Tempo de Contribuição:</span>
+                    <span className="font-medium">{resultado.tempoContrib} anos</span>
+                  </div>
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Idade Mínima ({resultado.sexo}):</span>
+                    <span className="font-medium">{resultado.idadeMinima} anos</span>
                   </div>
 
-                  <div className="bg-finance-green/10 p-4 rounded-lg mt-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-lg font-bold">Benefício Estimado:</span>
-                      <span className="text-2xl font-bold text-finance-green">
-                        {formatarMoeda(resultado.beneficioEstimado)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {resultado.percentualBeneficio}% da média dos salários (limitado ao teto do INSS)
-                    </p>
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Tempo Mínimo de Contribuição:</span>
+                    <span className="font-medium">{resultado.tempoMinimoContribuicao} anos</span>
                   </div>
+
+                  {resultado.anosRestantes > 0 ? (
+                    <div className="flex justify-between py-2 border-b">
+                      <span>Tempo Restante:</span>
+                      <span className="font-medium text-orange-600">{resultado.anosRestantes} anos</span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between py-2 border-b">
+                      <span>Status:</span>
+                      <span className="font-medium text-finance-green">Pode se aposentar!</span>
+                    </div>
+                  )}
                 </div>
 
-                <Alert className="no-print">
+                <div className="bg-finance-green/10 p-4 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-lg font-bold">Benefício Estimado:</span>
+                    <span className="text-2xl font-bold text-finance-green">
+                      {formatarMoeda(resultado.beneficioEstimado)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {resultado.percentualBeneficio}% da média dos salários (limitado ao teto do INSS)
+                  </p>
+                </div>
+
+                <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     <strong>Esta é uma estimativa!</strong> Consulte o INSS para cálculos precisos. 
@@ -237,14 +258,6 @@ const CalculadoraAposentadoria = () => {
       </div>
 
       <Footer />
-      
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          .print-section { break-inside: avoid; }
-          body { font-size: 12pt; }
-        }
-      `}</style>
     </div>
   );
 };

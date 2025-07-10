@@ -1,7 +1,8 @@
-
 import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import PrintLayout from '@/components/PrintLayout';
+import PrintTable from '@/components/PrintTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,8 +59,28 @@ const CalculadoraDividendYield = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+
+      {resultado && (
+        <PrintLayout title={`Análise de Dividend Yield - ${resultado.nomeAcao}`}>
+          <PrintTable
+            rows={[
+              { label: "Nome da Ação", value: resultado.nomeAcao },
+              { label: "Preço da Ação", value: resultado.precoAcao, category: "Dados da Ação" },
+              { label: "Dividendos por Ação (ano)", value: resultado.dividendosAnuais },
+              { label: "Quantidade de Ações", value: resultado.quantidadeAcoes.toString() },
+              { label: "Investimento Total", value: resultado.investimentoTotal },
+              { label: "DIVIDEND YIELD", value: `${resultado.dividendYield.toFixed(2)}%`, highlight: true, category: "Análise de Rendimento" },
+              { label: "Rendimento Anual", value: resultado.rendimentoAnual },
+              { label: "Rendimento Mensal", value: resultado.rendimentoMensal }
+            ]}
+          />
+          <div className="print-summary">
+            <p><strong>Resumo:</strong> O investimento em {resultado.nomeAcao} apresenta um dividend yield de {resultado.dividendYield.toFixed(2)}%, gerando uma renda passiva de {formatarMoeda(resultado.rendimentoMensal)} por mês.</p>
+          </div>
+        </PrintLayout>
+      )}
       
-      <div className="bg-white py-12">
+      <div className="bg-white py-12 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3 mb-4">
             <div className="bg-blue-50 p-3 rounded-lg">
@@ -78,9 +99,9 @@ const CalculadoraDividendYield = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 no-print">
         <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="no-print">
+          <Card>
             <CardHeader>
               <CardTitle>Dados da Ação</CardTitle>
               <CardDescription>Preencha os dados para calcular o dividend yield</CardDescription>
@@ -148,56 +169,54 @@ const CalculadoraDividendYield = () => {
                   <CardTitle className="text-finance-green">Análise de {resultado.nomeAcao}</CardTitle>
                   <CardDescription>Rendimento dos seus dividendos</CardDescription>
                 </div>
-                <Button onClick={imprimirPDF} variant="outline" className="no-print">
+                <Button onClick={imprimirPDF} variant="outline">
                   <Printer className="mr-2 h-4 w-4" />
                   Imprimir PDF
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="print-section">
-                  <div className="space-y-3">
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Preço da Ação:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.precoAcao)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Dividendos por Ação (ano):</span>
-                      <span className="font-medium">{formatarMoeda(resultado.dividendosAnuais)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Quantidade de Ações:</span>
-                      <span className="font-medium">{resultado.quantidadeAcoes}</span>
-                    </div>
-
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Investimento Total:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.investimentoTotal)}</span>
-                    </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Preço da Ação:</span>
+                    <span className="font-medium">{formatarMoeda(resultado.precoAcao)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Dividendos por Ação (ano):</span>
+                    <span className="font-medium">{formatarMoeda(resultado.dividendosAnuais)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Quantidade de Ações:</span>
+                    <span className="font-medium">{resultado.quantidadeAcoes}</span>
                   </div>
 
-                  <div className="bg-finance-green/10 p-4 rounded-lg mt-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-lg font-bold">Dividend Yield:</span>
-                      <span className="text-2xl font-bold text-finance-green">
-                        {resultado.dividendYield.toFixed(2)}%
-                      </span>
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Investimento Total:</span>
+                    <span className="font-medium">{formatarMoeda(resultado.investimentoTotal)}</span>
+                  </div>
+                </div>
+
+                <div className="bg-finance-green/10 p-4 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-lg font-bold">Dividend Yield:</span>
+                    <span className="text-2xl font-bold text-finance-green">
+                      {resultado.dividendYield.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Rendimento Anual:</span>
+                      <span>{formatarMoeda(resultado.rendimentoAnual)}</span>
                     </div>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Rendimento Anual:</span>
-                        <span>{formatarMoeda(resultado.rendimentoAnual)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Rendimento Mensal:</span>
-                        <span>{formatarMoeda(resultado.rendimentoMensal)}</span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span>Rendimento Mensal:</span>
+                      <span>{formatarMoeda(resultado.rendimentoMensal)}</span>
                     </div>
                   </div>
                 </div>
 
-                <Alert className="no-print">
+                <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     <strong>Organize sua carteira!</strong> Use nossa 
@@ -213,14 +232,6 @@ const CalculadoraDividendYield = () => {
       </div>
 
       <Footer />
-      
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          .print-section { break-inside: avoid; }
-          body { font-size: 12pt; }
-        }
-      `}</style>
     </div>
   );
 };

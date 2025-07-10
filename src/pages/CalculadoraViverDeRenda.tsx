@@ -1,39 +1,42 @@
-
 import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import PrintLayout from '@/components/PrintLayout';
+import PrintTable from '@/components/PrintTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, PiggyBank, AlertCircle, Printer } from 'lucide-react';
+import { Calculator, Target, AlertCircle, Printer } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const CalculadoraViverDeRenda = () => {
-  const [gastosMensais, setGastosMensais] = useState('');
-  const [rendimentoAnual, setRendimentoAnual] = useState('12');
+  const [rendaMensal, setRendaMensal] = useState('');
+  const [taxaJuros, setTaxaJuros] = useState('0.8');
   const [resultado, setResultado] = useState<any>(null);
 
-  const calcularViverDeRenda = () => {
-    const gastos = parseFloat(gastosMensais.replace(',', '.'));
-    const rendimento = parseFloat(rendimentoAnual.replace(',', '.')) / 100;
+  const calcularPatrimonio = () => {
+    const renda = parseFloat(rendaMensal.replace(',', '.'));
+    const taxa = parseFloat(taxaJuros.replace(',', '.')) / 100; // Convertendo para decimal
 
-    if (!gastos) {
-      alert('Preencha seus gastos mensais');
+    if (!renda || !taxa) {
+      alert('Preencha a renda desejada e a taxa de juros');
       return;
     }
 
-    const gastosAnuais = gastos * 12;
-    const patrimonioNecessario = gastosAnuais / rendimento;
-    const rendaMensal = patrimonioNecessario * rendimento / 12;
+    const patrimonioNecessario = renda / taxa;
+    const aporteAnual = patrimonioNecessario * 0.2; // 20% do patrimônio por ano
+    const aporteMensal = aporteAnual / 12;
+    const anosNecessarios = patrimonioNecessario / aporteAnual;
 
     setResultado({
-      gastosMensais: gastos,
-      gastosAnuais,
-      rendimentoAnual: rendimento * 100,
+      rendaMensal: renda,
+      taxaJuros: taxa * 100,
       patrimonioNecessario,
-      rendaMensal
+      aporteAnual,
+      aporteMensal,
+      anosNecessarios
     });
   };
 
@@ -51,63 +54,82 @@ const CalculadoraViverDeRenda = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+
+      {/* Conteúdo para impressão */}
+      {resultado && (
+        <PrintLayout title="Relatório para Viver de Renda">
+          <PrintTable
+            rows={[
+              { label: "Renda Mensal Desejada", value: resultado.rendaMensal },
+              { label: "Taxa de Juros Mensal", value: `${resultado.taxaJuros.toFixed(2)}%` },
+              { label: "PATRIMÔNIO NECESSÁRIO", value: resultado.patrimonioNecessario, highlight: true },
+              { label: "Aporte Anual Necessário", value: resultado.aporteAnual, category: "Estratégia de Acumulação" },
+              { label: "Aporte Mensal", value: resultado.aporteMensal },
+              { label: "Tempo Estimado", value: `${resultado.anosNecessarios.toFixed(1)} anos` }
+            ]}
+          />
+          <div className="print-summary">
+            <p><strong>Resumo:</strong> Para ter uma renda mensal de {formatarMoeda(resultado.rendaMensal)}, você precisa acumular {formatarMoeda(resultado.patrimonioNecessario)} investindo {formatarMoeda(resultado.aporteMensal)} por mês durante aproximadamente {resultado.anosNecessarios.toFixed(1)} anos.</p>
+          </div>
+        </PrintLayout>
+      )}
       
-      <div className="bg-white py-12">
+      <div className="bg-white py-12 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3 mb-4">
             <div className="bg-green-50 p-3 rounded-lg">
-              <PiggyBank className="h-6 w-6 text-finance-green" />
+              <Target className="h-6 w-6 text-finance-green" />
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-                Calculadora Viver de Renda
+                Calculadora para Viver de Renda
               </h1>
               <p className="text-gray-600 mt-2">
-                Descubra quanto precisa investir para viver de renda
+                Descubra quanto precisa investir para ter independência financeira
               </p>
             </div>
           </div>
-          <Badge className="bg-green-100 text-finance-green">Liberdade Financeira</Badge>
+          <Badge className="bg-green-100 text-finance-green">Independência Financeira</Badge>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 no-print">
         <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="no-print">
+          <Card>
             <CardHeader>
-              <CardTitle>Seus Dados Financeiros</CardTitle>
-              <CardDescription>Calcule quanto você precisa para viver de renda</CardDescription>
+              <CardTitle>Seus Objetivos</CardTitle>
+              <CardDescription>Calcule quanto precisa para viver de renda</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="gastos">Gastos Mensais Desejados (R$) *</Label>
+                <Label htmlFor="renda">Renda Mensal Desejada (R$) *</Label>
                 <Input
-                  id="gastos"
+                  id="renda"
                   type="text"
                   placeholder="Ex: 5000,00"
-                  value={gastosMensais}
-                  onChange={(e) => setGastosMensais(e.target.value)}
+                  value={rendaMensal}
+                  onChange={(e) => setRendaMensal(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="rendimento">Rendimento Esperado (% ao ano)</Label>
+                <Label htmlFor="taxa">Taxa de Juros Mensal (%) *</Label>
                 <Input
-                  id="rendimento"
+                  id="taxa"
                   type="text"
-                  placeholder="Ex: 12,0"
-                  value={rendimentoAnual}
-                  onChange={(e) => setRendimentoAnual(e.target.value)}
+                  placeholder="Ex: 0,8 (Tesouro Direto)"
+                  value={taxaJuros}
+                  onChange={(e) => setTaxaJuros(e.target.value)}
                 />
               </div>
 
               <Button 
-                onClick={calcularViverDeRenda} 
+                onClick={calcularPatrimonio} 
                 className="w-full bg-finance-blue hover:bg-finance-blue-light"
                 size="lg"
               >
                 <Calculator className="mr-2 h-5 w-5" />
-                Calcular Patrimônio Necessário
+                Calcular Patrimônio
               </Button>
             </CardContent>
           </Card>
@@ -116,47 +138,51 @@ const CalculadoraViverDeRenda = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-finance-green">Seu Plano de Liberdade Financeira</CardTitle>
-                  <CardDescription>Patrimônio necessário para viver de renda</CardDescription>
+                  <CardTitle className="text-finance-green">Plano de Independência</CardTitle>
+                  <CardDescription>Seu caminho para a liberdade financeira</CardDescription>
                 </div>
-                <Button onClick={imprimirPDF} variant="outline" className="no-print">
+                <Button onClick={imprimirPDF} variant="outline">
                   <Printer className="mr-2 h-4 w-4" />
                   Imprimir PDF
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="print-section">
-                  <div className="space-y-3">
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Gastos Mensais Desejados:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.gastosMensais)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Gastos Anuais:</span>
-                      <span className="font-medium">{formatarMoeda(resultado.gastosAnuais)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Rendimento Esperado:</span>
-                      <span className="font-medium">{resultado.rendimentoAnual.toFixed(1)}% ao ano</span>
-                    </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Renda Mensal Desejada:</span>
+                    <span className="font-medium">{formatarMoeda(resultado.rendaMensal)}</span>
                   </div>
-
-                  <div className="bg-finance-green/10 p-4 rounded-lg mt-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-lg font-bold">Patrimônio Necessário:</span>
-                      <span className="text-2xl font-bold text-finance-green">
-                        {formatarMoeda(resultado.patrimonioNecessario)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      Gerando uma renda mensal de {formatarMoeda(resultado.rendaMensal)}
-                    </p>
+                  
+                  <div className="flex justify-between py-2 border-b">
+                    <span>Taxa de Juros:</span>
+                    <span className="font-medium">{resultado.taxaJuros.toFixed(2)}% ao mês</span>
                   </div>
                 </div>
 
-                <Alert className="no-print">
+                <div className="bg-finance-green/10 p-4 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-lg font-bold">Patrimônio Necessário:</span>
+                    <span className="text-2xl font-bold text-finance-green">
+                      {formatarMoeda(resultado.patrimonioNecessario)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-blue-800 mb-2">Estratégia:</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Aporte Mensal:</span>
+                      <span className="font-bold">{formatarMoeda(resultado.aporteMensal)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tempo Estimado:</span>
+                      <span className="font-bold">{resultado.anosNecessarios.toFixed(1)} anos</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     <strong>Organize seus investimentos!</strong> Use nossa 
@@ -172,14 +198,6 @@ const CalculadoraViverDeRenda = () => {
       </div>
 
       <Footer />
-      
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          .print-section { break-inside: avoid; }
-          body { font-size: 12pt; }
-        }
-      `}</style>
     </div>
   );
 };
