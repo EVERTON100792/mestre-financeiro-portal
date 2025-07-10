@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Calculadoras from "./pages/Calculadoras";
+import Planilhas from "./pages/Planilhas";
+import PlanilhaControleFinanceiro from "./pages/PlanilhaControleFinanceiro";
+import PlanilhaViabilidadeNegocios from "./pages/PlanilhaViabilidadeNegocios";
 import CalculadoraRescisao from "./pages/CalculadoraRescisao";
 import CalculadoraJurosCompostos from "./pages/CalculadoraJurosCompostos";
 import CalculadoraHorasExtras from "./pages/CalculadoraHorasExtras";
@@ -33,6 +36,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/calculadoras" element={<Calculadoras />} />
+          <Route path="/planilhas" element={<Planilhas />} />
+          <Route path="/planilha/controle-financeiro-pessoal" element={<PlanilhaControleFinanceiro />} />
+          <Route path="/planilha/viabilidade-negocios" element={<PlanilhaViabilidadeNegocios />} />
           <Route path="/calculadora/rescisao-clt" element={<CalculadoraRescisao />} />
           <Route path="/calculadora/juros-compostos" element={<CalculadoraJurosCompostos />} />
           <Route path="/calculadora/horas-extras" element={<CalculadoraHorasExtras />} />
