@@ -1,4 +1,3 @@
-
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import PrintLayout from '@/components/PrintLayout';
@@ -7,10 +6,42 @@ import { Button } from '@/components/ui/button';
 import { Download, Printer, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { exportToExcel, ExcelData } from '@/utils/excelExport';
 
 const PlanilhaControleFinanceiro = () => {
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadExcel = () => {
+    const sheets: ExcelData[] = [
+      {
+        sheetName: 'Receitas',
+        data: receitasExemplo.map(receita => ({
+          'Categoria': receita.categoria,
+          'Tipo': receita.tipo,
+          'Valor': receita.valor
+        }))
+      },
+      {
+        sheetName: 'Despesas',
+        data: despesasExemplo.map(despesa => ({
+          'Categoria': despesa.categoria,
+          'Tipo': despesa.tipo,
+          'Valor': despesa.valor
+        }))
+      },
+      {
+        sheetName: 'Resumo',
+        data: [
+          { 'Item': 'Total Receitas', 'Valor': totalReceitas },
+          { 'Item': 'Total Despesas', 'Valor': totalDespesas },
+          { 'Item': 'Saldo Final', 'Valor': saldoFinal }
+        ]
+      }
+    ];
+
+    exportToExcel('Controle_Financeiro_Pessoal', sheets);
   };
 
   const receitasExemplo = [
@@ -72,7 +103,7 @@ const PlanilhaControleFinanceiro = () => {
                   <Printer className="mr-2 h-4 w-4" />
                   Imprimir PDF
                 </Button>
-                <Button className="bg-finance-green hover:bg-finance-green-light">
+                <Button onClick={handleDownloadExcel} className="bg-finance-green hover:bg-finance-green-light">
                   <Download className="mr-2 h-4 w-4" />
                   Baixar Excel
                 </Button>

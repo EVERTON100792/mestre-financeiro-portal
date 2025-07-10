@@ -1,4 +1,3 @@
-
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import PrintLayout from '@/components/PrintLayout';
@@ -7,10 +6,47 @@ import { Button } from '@/components/ui/button';
 import { Download, Printer, Briefcase, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { exportToExcel, ExcelData } from '@/utils/excelExport';
 
 const PlanilhaViabilidadeNegocios = () => {
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadExcel = () => {
+    const sheets: ExcelData[] = [
+      {
+        sheetName: 'Custos Fixos',
+        data: custosFixos.map(custo => ({
+          'Item': custo.item,
+          'Valor Mensal': custo.valor
+        }))
+      },
+      {
+        sheetName: 'Custos Variáveis',
+        data: custosVariaveis.map(custo => ({
+          'Item': custo.item,
+          'Percentual sobre Vendas': `${custo.percentual}%`
+        }))
+      },
+      {
+        sheetName: 'Análise de Viabilidade',
+        data: [
+          { 'Indicador': 'Investimento Inicial', 'Valor': investimentoInicial },
+          { 'Indicador': 'Total Custos Fixos', 'Valor': totalCustosFixos },
+          { 'Indicador': 'Custos Variáveis (%)', 'Valor': `${totalCustosVariaveisPerc}%` },
+          { 'Indicador': 'Ponto de Equilíbrio (un)', 'Valor': pontoEquilibrio },
+          { 'Indicador': 'Receita Ponto Equilíbrio', 'Valor': receitaPontoEquilibrio },
+          { 'Indicador': 'Vendas Projetadas (un)', 'Valor': vendasProjetadas },
+          { 'Indicador': 'Receita Projetada', 'Valor': receitaProjetada },
+          { 'Indicador': 'Lucro Líquido Mensal', 'Valor': lucroLiquido },
+          { 'Indicador': 'Margem de Lucro (%)', 'Valor': `${margemLucro.toFixed(1)}%` },
+          { 'Indicador': 'Payback (meses)', 'Valor': `${payback.toFixed(1)}` }
+        ]
+      }
+    ];
+
+    exportToExcel('Viabilidade_de_Negocios', sheets);
   };
 
   const investimentoInicial = 50000;
@@ -88,7 +124,7 @@ const PlanilhaViabilidadeNegocios = () => {
                   <Printer className="mr-2 h-4 w-4" />
                   Imprimir PDF
                 </Button>
-                <Button className="bg-finance-green hover:bg-finance-green-light">
+                <Button onClick={handleDownloadExcel} className="bg-finance-green hover:bg-finance-green-light">
                   <Download className="mr-2 h-4 w-4" />
                   Baixar Excel
                 </Button>

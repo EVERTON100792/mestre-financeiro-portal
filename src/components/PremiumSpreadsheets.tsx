@@ -3,6 +3,7 @@ import { FileSpreadsheet, Download, Star, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
 
 const PremiumSpreadsheets = () => {
   const spreadsheets = [
@@ -13,7 +14,8 @@ const PremiumSpreadsheets = () => {
       badge: 'Carro-chefe',
       badgeColor: 'bg-finance-green',
       downloads: '12.5k',
-      rating: 4.9
+      rating: 4.9,
+      href: '/planilha/controle-financeiro-pessoal'
     },
     {
       title: 'Viabilidade de Negócios',
@@ -22,7 +24,8 @@ const PremiumSpreadsheets = () => {
       badge: 'Empresarial',
       badgeColor: 'bg-finance-blue',
       downloads: '8.3k',
-      rating: 4.8
+      rating: 4.8,
+      href: '/planilha/viabilidade-negocios'
     },
     {
       title: 'Amortização de Financiamento',
@@ -31,7 +34,8 @@ const PremiumSpreadsheets = () => {
       badge: 'Imóveis',
       badgeColor: 'bg-purple-600',
       downloads: '6.1k',
-      rating: 4.7
+      rating: 4.7,
+      href: '/planilha/amortizacao-financiamento'
     },
     {
       title: 'Comparação de Investimentos',
@@ -40,7 +44,8 @@ const PremiumSpreadsheets = () => {
       badge: 'Investimentos',
       badgeColor: 'bg-orange-600',
       downloads: '9.2k',
-      rating: 4.6
+      rating: 4.6,
+      href: '/planilha/comparacao-investimentos'
     }
   ];
 
@@ -101,9 +106,11 @@ const PremiumSpreadsheets = () => {
                   ))}
                 </div>
                 
-                <Button className="w-full bg-finance-green hover:bg-finance-green-light text-white">
-                  <Download className="mr-2 h-4 w-4" />
-                  Acessar Planilha Grátis
+                <Button className="w-full bg-finance-green hover:bg-finance-green-light text-white" asChild>
+                  <Link to={sheet.href}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Acessar Planilha Grátis
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -112,7 +119,7 @@ const PremiumSpreadsheets = () => {
 
         <div className="text-center mt-12">
           <Button size="lg" variant="outline" asChild>
-            <a href="/planilhas">Ver Todas as Planilhas</a>
+            <Link to="/planilhas">Ver Todas as Planilhas</Link>
           </Button>
         </div>
       </div>
