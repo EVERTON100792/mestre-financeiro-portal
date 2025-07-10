@@ -1,0 +1,164 @@
+
+/* Estilos para impressão */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 2cm 1.5cm;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  .print-logo h1 {
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+  }
+
+  .print-logo p {
+    font-size: 10pt;
+    margin: 0;
+    color: #666;
+  }
+
+  .print-date {
+    font-size: 10pt;
+    color: #666;
+  }
+
+  .print-title {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .print-title h2 {
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+    text-transform: uppercase;
+  }
+
+  .print-content {
+    margin: 20px 0;
+  }
+
+  .print-table {
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  .print-category {
+    margin: 15px 0 5px 0;
+  }
+
+  .print-category h4 {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+    text-transform: uppercase;
+  }
+
+  .print-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px dotted #ccc;
+  }
+
+  .print-row.highlight {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    padding: 6px 10px;
+    margin: 5px 0;
+    border: 1px solid #333;
+  }
+
+  .print-label {
+    font-weight: normal;
+    color: #333;
+  }
+
+  .print-value {
+    font-weight: bold;
+    color: #000;
+  }
+
+  .print-summary {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+  .print-summary p {
+    margin: 0;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  .print-footer {
+    position: fixed;
+    bottom: 1cm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9pt;
+    color: #666;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+  }
+
+  .print-footer p {
+    margin: 2px 0;
+  }
+
+  /* Quebra de página */
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Evita quebra de elementos */
+  .print-table,
+  .print-summary {
+    page-break-inside: avoid;
+  }
+}
+
+/* Ocultar por padrão na tela */
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
